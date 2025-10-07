@@ -1,166 +1,160 @@
-# 🚀 Visionyze – Test Backend Confirmé (Candidat)
+# Visionyze – Test Technique Backend
 
-Ce test a pour objectif d’évaluer ta capacité à concevoir et implémenter une **API REST moderne, propre et robuste**, en utilisant les bonnes pratiques de développement backend.
+## 📊 Aperçu
 
-Le projet est déjà initialisé avec **Fastify + TypeScript + Prisma + Redis**.  
-Ton rôle est d’implémenter les fonctionnalités clés manquantes.
-
----
-
-## ⚙️ Stack technique
-- **Framework** : Fastify 4.x (TypeScript)
-- **ORM** : Prisma (PostgreSQL)
-- **Cache** : Redis
-- **Validation** : Zod
-- **Auth** : JWT (Fastify JWT)
-- **Logs** : Pino
-- **Tests** : Vitest (ou Jest)
+Ce projet est une mini API REST pour un site e-commerce, développé dans le cadre d'un test technique. L'API repose sur une stack moderne incluant **Fastify**, **TypeScript**, **Prisma**, **PostgreSQL** et **Redis**.
 
 ---
 
-## 🧭 Objectif général
-Développer une **mini API e-commerce simplifiée** permettant :
-- L’enregistrement et la connexion d’utilisateurs.
-- La gestion des produits (CRUD + cache Redis).
-- La création et le paiement de commandes (transactions).
-- L’accès à des métriques administrateur.
+## ✨ Fonctionnalités
+
+### 🔐 Authentification & Autorisation
+
+* Inscription, connexion et protection des routes via **JWT**.
+* Gestion des rôles utilisateurs avec un rôle **ADMIN**.
+
+### 🛏️ Gestion des Produits
+
+* CRUD complet sur les produits.
+* Mise en cache des listes produits via **Redis** pour des performances accrues.
+
+### 🧾 Gestion des Commandes
+
+* Création de commandes avec validation du stock et calcul automatique du total.
+* Transactions sécurisées via **Prisma**.
+
+### 📊 Métriques Administrateur
+
+* Endpoint sécurisé permettant aux administrateurs de visualiser les statistiques clés de la plateforme.
 
 ---
 
-## 🐳 Lancement avec Docker
+## ⚙️ Stack Technique
+
+* **Framework** : Fastify
+* **Langage** : TypeScript
+* **ORM** : Prisma
+* **Base de données** : PostgreSQL
+* **Cache** : Redis
+* **Validation** : Zod
+* **Tests** : Vitest
+
+---
+
+## 🚀 Démarrage Rapide
+
+Ce projet est entièrement conteneurisé avec **Docker**. Assurez-vous d'avoir **Docker** et **Docker Compose** installés.
+
+### 1. Cloner le dépôt
+
+```bash
+git clone https://github.com/ilyas-exe/technical-test-backend.git
+cd technical-test-backend
+```
+
+### 2. Configurer les variables d'environnement
+
+Copiez le fichier d'exemple `.env.example` :
+
+```bash
+# Windows
+copy .env.example .env
+
+# macOS / Linux
+cp .env.example .env
+```
+
+### 3. Lancer les services
+
+Construit et lance tous les conteneurs (API, PostgreSQL, Redis) :
 
 ```bash
 docker compose up --build
-# API accessible sur http://localhost:3001
 ```
 
-> Par défaut, PostgreSQL et Redis se lancent automatiquement avec le projet.
+L'API sera disponible sur : **[http://localhost:3001](http://localhost:3001)**
 
----
+### 4. Initialiser la base de données
 
-## 🧩 Prisma & base de données
+Dans un nouveau terminal :
 
 ```bash
-npm run prisma:migrate
-npm run seed
+# Appliquer les migrations Prisma
+docker compose exec app npm run prisma:migrate
+
+# Générer des données de test (admin + produits)
+docker compose exec app npm run seed
 ```
 
-> Le fichier `prisma/schema.prisma` contient déjà une structure de base (User, Product, Order, OrderItem).
+Votre environnement est prêt ✨
 
 ---
 
-## 🧠 À implémenter (TODO)
-
-### 🔐 Authentification
-- `POST /auth/register` → création utilisateur, hash mot de passe.
-- `POST /auth/login` → retour JWT.
-- Middleware JWT pour protéger les routes.
-- Guard **admin** pour les routes d’administration.
-
----
-
-### 🛍️ Produits
-- `GET /products` → liste paginée avec `?search=&page=&limit=`.
-- `POST /products` / `PATCH /products/:id` → accessible **admin uniquement**.
-- Mise en **cache Redis (60s)** pour la liste des produits.
-- Invalidation du cache après création, modification ou suppression.
-
----
-
-### 🧾 Commandes
-- `POST /orders` → crée une commande et ses items :
-  - Vérifie le stock.
-  - Calcule le total.
-  - Effectue une **transaction Prisma**.
-- `POST /orders/:id/pay` → change le statut en `PAID`, décrémente le stock.
-- `GET /orders/:id` → accessible uniquement au propriétaire ou à un admin.
-
----
-
-### 📊 Metrics (admin uniquement)
-- `GET /admin/metrics` → retourne :
-  - nombre total d’utilisateurs
-  - nombre de commandes sur 7 jours
-  - chiffre d’affaires total sur 7 jours
-
----
-
-### 🧱 Validation et qualité
-- Validation des entrées avec **Zod**.
-- Erreurs formatées (Fastify `sensible`).
-- Logs propres avec **Pino**.
-- Types stricts TypeScript.
-- Tests unitaires (services) et 1–2 tests d’intégration.
-
----
-
-## 💾 Bonus possibles
-- Pagination et filtres avancés sur `/products`.
-- Commandes “simulées” avec Stripe Test Mode.
-- Dockerfile parfaitement fonctionnel (déjà prêt).
-- Postman/Insomnia Collection incluse.
-
----
-
-## 🧪 Tests (optionnel mais recommandé)
+## 🥳 Lancer les Tests
 
 ```bash
+# Installer les dépendances
+npm install
+
+# Exécuter les tests
 npm run test
 ```
 
-> Vitest ou Jest au choix.  
-> Minimum attendu : 2 tests unitaires + 1 test d’intégration.
+---
+
+## 🔗 Endpoints Principaux
+
+### Authentification (`/auth`)
+
+| Méthode | Endpoint         | Description                     | Auth |
+| ------- | ---------------- | ------------------------------- | ---- |
+| POST    | `/auth/register` | Créer un utilisateur            | ❌    |
+| POST    | `/auth/login`    | Se connecter (retourne un JWT)  | ❌    |
+| GET     | `/auth/me`       | Infos de l'utilisateur connecté | ✅    |
+| GET     | `/auth/users`    | Liste des utilisateurs (admin)  | 🛡️  |
+
+### Produits (`/products`)
+
+| Méthode | Endpoint        | Description                                 | Auth |
+| ------- | --------------- | ------------------------------------------- | ---- |
+| GET     | `/products`     | Liste des produits (pagination & recherche) | ❌    |
+| POST    | `/products`     | Créer un produit (admin)                    | 🛡️  |
+| PATCH   | `/products/:id` | Modifier un produit (admin)                 | 🛡️  |
+
+### Commandes (`/orders`)
+
+| Méthode | Endpoint          | Description                                 | Auth |
+| ------- | ----------------- | ------------------------------------------- | ---- |
+| POST    | `/orders`         | Créer une commande                          | ✅    |
+| GET     | `/orders/:id`     | Détails d'une commande (propriétaire/admin) | ✅    |
+| POST    | `/orders/:id/pay` | Marquer une commande comme payée            | ✅    |
+
+### Administration (`/admin`)
+
+| Méthode | Endpoint         | Description                   | Auth |
+| ------- | ---------------- | ----------------------------- | ---- |
+| GET     | `/admin/metrics` | Statistiques de la plateforme | 🛡️  |
 
 ---
 
-## 🧰 Structure indicative
-```
-project/
-├─ prisma/
-│  ├─ schema.prisma
-│  └─ migrations/
-├─ src/
-│  ├─ index.ts
-│  └─ ...
-├─ package.json
-├─ Dockerfile
-├─ docker-compose.yml
-└─ .env(.example)
-```
+## 🛠️ Scripts Utiles
+
+| Commande                 | Description                   |
+| ------------------------ | ----------------------------- |
+| `npm run dev`            | Lancer le serveur en mode dev |
+| `npm run build`          | Compiler le projet TypeScript |
+| `npm run start`          | Lancer la version compilée    |
+| `npm run prisma:migrate` | Appliquer les migrations      |
+| `npm run seed`           | Remplir la base de test       |
+| `npm run test`           | Exécuter les tests            |
 
 ---
 
-## 🕓 Modalités du test
-- **Durée** : 48 heures à partir de la réception du projet.
-- **Temps estimé** : 6 à 8 heures de travail réel.
-- **Livrable attendu** :
-  - Lien vers un dépôt Git public ou un zip.
-  - `.env.example` complet.
-  - README avec instructions pour lancer ton code.
+## 👤 Auteur
 
-> Tu peux utiliser ChatGPT ou la documentation, **mais le code doit rester personnel et compréhensible**.
+**Ilyas**
+[GitHub](https://github.com/ilyas-exe)
 
 ---
 
-## 📈 Évaluation (sur 100 points)
-
-| Critère | Détail | Points |
-|----------|---------|--------|
-| **Fonctionnalités** | Auth, produits, commandes, metrics fonctionnels | **35** |
-| **Structure et rigueur** | Architecture claire, transactions, validations | **20** |
-| **Qualité du code** | Lisibilité, typage, cohérence, bonnes pratiques | **20** |
-| **Sécurité et robustesse** | Auth JWT, validations, gestion erreurs | **15** |
-| **Tests & Dev Experience** | Tests, README, Docker fonctionnel | **10** |
-
----
-
-## 💬 Exemple rapide
-```bash
-curl http://localhost:3001/health
-# {"ok":true}
-```
-
----
-
-Souviens-toi :  
-👉 Le but n’est pas de tout faire “parfaitement”, mais de **montrer ta logique, ton organisation et ton approche technique**.
+> Ce projet a été réalisé dans le cadre d'un test technique backend pour Visionyze.
